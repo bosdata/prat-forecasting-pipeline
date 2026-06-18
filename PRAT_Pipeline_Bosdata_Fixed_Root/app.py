@@ -1,4 +1,5 @@
 from __future__ import annotations
+import streamlit as st
 
 import io
 import os
@@ -14,6 +15,132 @@ import streamlit as st
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 
+# ============================================================
+# SIMPLE LOGIN SECTION
+# Created for PRAT Forecasting Pipeline
+# ============================================================
+
+USERS = {
+    "admin": {
+        "password": "Admin@2026",
+        "role": "Admin"
+    },
+    "meal": {
+        "password": "Meal@2026",
+        "role": "MEAL Manager"
+    },
+    "viewer": {
+        "password": "Viewer@2026",
+        "role": "Viewer"
+    }
+}
+
+
+def show_login_page():
+    st.markdown(
+        """
+        <style>
+        .login-title {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 700;
+            margin-top: 40px;
+            color: #ffffff;
+        }
+        .login-subtitle {
+            text-align: center;
+            font-size: 16px;
+            color: #cfcfcf;
+            margin-bottom: 25px;
+        }
+        .login-footer {
+            position: fixed;
+            bottom: 12px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 13px;
+            color: #bdbdbd;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown('<div class="login-title">PRAT Forecasting Pipeline</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="login-subtitle">Vibrant Village Foundation Registration Forecasting System</div>',
+        unsafe_allow_html=True
+    )
+
+    with st.form("login_form"):
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
+
+        login_clicked = st.form_submit_button("Login")
+
+        if login_clicked:
+            if username in USERS and password == USERS[username]["password"]:
+                st.session_state["logged_in"] = True
+                st.session_state["username"] = username
+                st.session_state["role"] = USERS[username]["role"]
+                st.success("Login successful.")
+                st.rerun()
+            else:
+                st.error("Invalid username or password.")
+
+    if st.button("Forgot password?"):
+        st.warning("Please contact the system administrator to reset your password.")
+
+    st.markdown(
+        """
+        <div class="login-footer">
+            PowerdBy: Bosdata Tech Team | Created by Brian Sifuna Obware
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+def require_login():
+    if "logged_in" not in st.session_state:
+        st.session_state["logged_in"] = False
+
+    if not st.session_state["logged_in"]:
+        show_login_page()
+        st.stop()
+
+
+def show_logout_button():
+    with st.sidebar:
+        st.markdown("### User Access")
+        st.write(f"**User:** {st.session_state.get('username', '')}")
+        st.write(f"**Role:** {st.session_state.get('role', '')}")
+
+        if st.button("Logout"):
+            st.session_state["logged_in"] = False
+            st.session_state["username"] = ""
+            st.session_state["role"] = ""
+            st.rerun()
+
+    st.markdown(
+        """
+        <div style="
+            position: fixed;
+            bottom: 10px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 13px;
+            color: #999999;
+            z-index: 9999;
+        ">
+            PowerdBy: Bosdata Tech Team | Created by Brian Sifuna Obware
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
 APP_FOOTER = "Created by Bosdata Tech Team, Brian Sifuna Obware"
 VIEW_ORDER = ["Daily", "Weekly", "Monthly", "Quarterly", "Semi-annual", "Annual"]
 
@@ -22,6 +149,9 @@ st.set_page_config(
     page_icon="📈",
     layout="wide",
 )
+
+require_login()
+show_logout_button()
 
 st.markdown(
     """
