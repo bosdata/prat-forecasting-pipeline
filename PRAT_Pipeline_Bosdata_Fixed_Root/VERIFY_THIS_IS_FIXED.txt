@@ -1,0 +1,5 @@
+When you open the app, confirm you see this green message near the top:
+
+FIXED VERSION: multi-select optional columns, stable forecast view, PDF report, detailed data cleaning, duplicate checks, and Bosdata footer are active.
+
+If you do not see that message, you are running an old app folder.
